@@ -1,16 +1,18 @@
 {
-  "name": "nert-service",
+  "name": "hamster-pools",
   "version": "2.0.0",
   "main": "bin/www",
-  "author": "Bond <lovedammy77@yahoo.com>",
+  "author": "Jones Ogolo",
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "scripts/build.sh",
+    "build": "bash -e scripts/build.sh",
     "start": "./bin/www",
     "test": "jest",
     "test:integration": "cypress run",
-    "client:start": "cd client; yarn start"
+    "client:start": "cd client; yarn start",
+    "migrate": "ts-node node_modules/.bin/node-pg-migrate -j ts",
+    "dev": "tsc -w & nodemon --ignore 'client/' && bin/www" 
   },
   "dependencies": {
     "compression": "1.7.4",
@@ -21,7 +23,11 @@
     "express-graphql": "0.11.0",
     "graphql": "15.3.0",
     "http-errors": "1.8.0",
-    "morgan": "1.10.0"
+    "morgan": "1.10.0",
+    "node-pg-migrate": "5.9.0",
+    "pg": "8.5.1",
+    "postgres": "1.0.2",
+    "ts-node": "9.1.1"
   },
   "devDependencies": {
     "@types/compression": "1.7.0",
@@ -37,6 +43,7 @@
     "cypress": "4.11.0",
     "husky": "4.2.5",
     "jest": "26.1.0",
+    "nodemon": "2.0.7",
     "prettier": "2.0.5",
     "pretty-quick": "2.0.1",
     "supertest": "4.0.2",
