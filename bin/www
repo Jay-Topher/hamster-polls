@@ -17,8 +17,12 @@ process.env = JSON.parse(JSON.stringify(process.env));
  */
 
 const app = require('../dist/app').default;
+const { testDBConnection } = require('../dist/stores/database');
 const debug = require('debug')('nert:server');
 const http = require('http');
+
+/** Connect to DB */
+testDBConnection();
 
 /**
  * Get port from environment and store in Express.
