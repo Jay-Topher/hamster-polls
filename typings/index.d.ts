@@ -11,3 +11,15 @@ interface UserType {
   password: string;
   username: string;
 }
+
+interface UserLoginType {
+  username: string;
+  password: string;
+}
+
+interface LoggedInUserType {
+  id: string;
+  email: string;
+  username: string;
+  password: string;
+}
