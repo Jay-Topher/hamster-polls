@@ -33,7 +33,7 @@ async function registerUser(user: UserType) {
       'password',
       'email',
       'username',
-    )}`;
+    )} RETURNING *`;
 
     return signToken({
       id: savedUser.id,
@@ -50,6 +50,45 @@ async function registerUser(user: UserType) {
   }
 }
 
+async function loginUser(user: UserLoginType) {
+  try {
+    const { username, password } = user;
+    const [existingUser] = await sql<
+      LoggedInUserType
+    >`SELECT id, username, email, password FROM users WHERE username = ${username}`;
+
+    if (!existingUser)
+      throw new APIError({
+        status: 404,
+        message: 'User does not exist',
+        errors: 'User not found',
+      });
+
+    // check user password
+    const rightPassword = await argon2.verify(existingUser.password, password);
+    if (!rightPassword)
+      throw new APIError({
+        status: 400,
+        message: 'Wrong Username or Password',
+        errors: 'Wrong username/password',
+      });
+
+    return signToken({
+      email: existingUser.email,
+      username: existingUser.username,
+      id: existingUser.id,
+    });
+  } catch (error) {
+    console.error(error);
+    throw new APIError({
+      errors: error,
+      status: 500,
+      message: error.message || error,
+    });
+  }
+}
+
 export default {
   registerUser,
+  loginUser,
 };
