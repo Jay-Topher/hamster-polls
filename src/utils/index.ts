@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-import { JwtPayload } from '../../typings';
 import { APIError } from '../config/error';
 
 /**
