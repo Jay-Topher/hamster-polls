@@ -23,3 +23,9 @@ interface LoggedInUserType {
   username: string;
   password: string;
 }
+
+interface PollType {
+  title: string;
+  description?: string;
+  author_id: string;
+}
