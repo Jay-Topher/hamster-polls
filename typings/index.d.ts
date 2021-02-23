@@ -29,3 +29,8 @@ interface PollType {
   description?: string;
   author_id: string;
 }
+
+interface QuestionCreateType {
+  question: string;
+  poll_id: string;
+}

@@ -1,6 +1,10 @@
 import jwt from 'jsonwebtoken';
 import { APIError } from '../config/error';
 
+/**
+ * A function to encode user details in a token
+ * @param payload User object to sign
+ */
 export function signToken(payload: JwtPayload) {
   const secret = process.env.JWT_SECRET;
   if (!secret)
@@ -12,6 +16,10 @@ export function signToken(payload: JwtPayload) {
   return jwt.sign(payload, secret, { expiresIn: '7d' });
 }
 
+/**
+ * A fn to decode token into user ID or object
+ * @param token Token to decode
+ */
 export function getUserFromToken(token: string) {
   try {
     const secret = process.env.JWT_SECRET;

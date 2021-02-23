@@ -15,7 +15,7 @@ async function addPoll({ title, description = '', author_id }: PollType) {
       'title',
       'description',
       'author_id',
-    )}) RETURNING *`;
+    )} RETURNING *`;
 
     return addedPoll;
   } catch (error) {
