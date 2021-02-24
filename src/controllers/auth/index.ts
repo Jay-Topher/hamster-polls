@@ -50,6 +50,10 @@ async function registerUser(user: UserType) {
   }
 }
 
+/**
+ * Fn to login a user
+ * @param user user object
+ */
 async function loginUser(user: UserLoginType) {
   try {
     const { username, password } = user;
