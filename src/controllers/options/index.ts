@@ -3,6 +3,10 @@ import OptionTable from '../../interface/option';
 import { sql } from '../../stores/database';
 import status from 'http-status';
 
+/**
+ * a Fn to add single or multiple options to a question
+ * @param options option or options to add
+ */
 async function addOptions(options: OptionTable[] | OptionTable) {
   try {
     const [savedOption] = await sql<
@@ -19,6 +23,11 @@ async function addOptions(options: OptionTable[] | OptionTable) {
   }
 }
 
+/**
+ *
+ * @param optionId ID of the option to edit
+ * @param option Text to edit the option
+ */
 async function editOption(optionId: string, option: string) {
   try {
     const [editedOption] = await sql<
@@ -42,6 +51,10 @@ async function editOption(optionId: string, option: string) {
   }
 }
 
+/**
+ * A Fn to delete an option from the DB
+ * @param optionId ID of the option to be deleted
+ */
 async function deleteOption(optionId: string) {
   try {
     const [optionToDelete] = await sql<{
