@@ -3,6 +3,10 @@ import QuestionTable from '../../interface/questions';
 import { sql } from '../../stores/database';
 import status from 'http-status';
 
+/**
+ * A Fn to add questions to DB
+ * @param questionPayload question object
+ */
 async function createQuestion(questionPayload: QuestionCreateType) {
   try {
     const [questionToSave] = await sql<
@@ -23,6 +27,11 @@ async function createQuestion(questionPayload: QuestionCreateType) {
   }
 }
 
+/**
+ * A Fn to edit questions
+ * @param questionId The ID of the question to be edited
+ * @param question New info to add
+ */
 async function editQuestion(questionId: string, question: string) {
   try {
     const [editedQuestion] = await sql<
@@ -46,6 +55,10 @@ async function editQuestion(questionId: string, question: string) {
   }
 }
 
+/**
+ * A Fn to delete a question given the ID
+ * @param questionId The ID of the question to delete
+ */
 async function deleteQuestion(questionId: string) {
   try {
     const [questionToDelete] = await sql<{
