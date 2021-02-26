@@ -34,3 +34,14 @@ interface QuestionCreateType {
   question: string;
   poll_id: string;
 }
+
+interface VoteCreateType {
+  question_id: string;
+  option_id: string;
+  voter_id: string;
+}
+
+interface PollHistoryCreateType {
+  voter_id: string;
+  poll_id: string;
+}
