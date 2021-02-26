@@ -13,6 +13,12 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       default: pgm.func('uuid_generate_v4()'),
       comment: 'The id of the vote',
     },
+    question_id: {
+      type: 'uuid',
+      notNull: true,
+      references: 'questions("id")',
+      comment: 'The ID of the question answered',
+    },
     option_id: {
       type: 'uuid',
       notNull: true,
