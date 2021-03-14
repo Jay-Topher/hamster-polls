@@ -2,6 +2,8 @@ import { APIError } from '../../config/error';
 import QuestionTable from '../../interface/questions';
 import { sql } from '../../stores/database';
 import status from 'http-status';
+import OptionTable from '../../interface/option';
+import httpStatus from 'http-status';
 
 /**
  * A Fn to add questions to DB
@@ -108,8 +110,31 @@ async function getQuestionById(questionId: string) {
 }
 
 async function getQuestionOptions(questionId: string) {
+  try {
+    const [options] = await sql<
+      [OptionTable[]]
+    >`SELECT * FROM options WHERE question_id = ${questionId}`;
+
+    if (!options) {
+      throw new APIError({
+        status: httpStatus.NOT_FOUND,
+        message: 'No options found',
+        errors: 'Options not found',
+      });
+    }
+  } catch (error) {
+    throw new APIError({
+      errors: error,
+      status: status.INTERNAL_SERVER_ERROR,
+      message: error.message || error,
+    });
+  }
+}
+
 export default {
   createQuestion,
   deleteQuestion,
   editQuestion,
+  getQuestionOptions,
+  getQuestionById,
 };
