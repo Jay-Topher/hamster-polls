@@ -83,6 +83,31 @@ async function deleteQuestion(questionId: string) {
   }
 }
 
+async function getQuestionById(questionId: string) {
+  try {
+    const [question] = await sql<
+      QuestionTable
+    >`SELECT * FROM questions WHERE ID = ${questionId} RETURNING *`;
+
+    if (!question) {
+      throw new APIError({
+        status: httpStatus.NOT_FOUND,
+        message: 'Question with this ID not found',
+        errors: 'Question with this ID not found',
+      });
+    }
+
+    return question;
+  } catch (error) {
+    throw new APIError({
+      errors: error,
+      status: status.INTERNAL_SERVER_ERROR,
+      message: error.message || error,
+    });
+  }
+}
+
+async function getQuestionOptions(questionId: string) {
 export default {
   createQuestion,
   deleteQuestion,
