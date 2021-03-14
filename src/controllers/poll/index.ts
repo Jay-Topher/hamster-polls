@@ -1,5 +1,7 @@
+import httpStatus from 'http-status';
 import { APIError } from '../../config/error';
 import PollTable from '../../interface/poll';
+import QuestionTable from '../../interface/questions';
 import { sql } from '../../stores/database';
 
 /**
@@ -102,7 +104,29 @@ async function getPoll(pollId: string) {
   }
 }
 
+async function getPollWithQuestions(pollId: string) {
+  try {
+    const pollPromise = getPoll(pollId);
+    const questionsPromise = getPollQuestions(pollId);
+    const [poll, questions] = await Promise.all([
+      pollPromise,
+      questionsPromise,
+    ]);
+
+    return { poll, questions };
+  } catch (error) {
+    throw new APIError({
+      errors: error,
+      message: error.message || error,
+      status: 500,
+    });
+  }
+}
+
 export default {
   addPoll,
   publishPoll,
+  getPollQuestions,
+  getPollWithQuestions,
+  getPoll,
 };
