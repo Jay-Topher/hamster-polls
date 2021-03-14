@@ -12,7 +12,7 @@ async function vote(payload: VoteCreateType) {
   try {
     const [checkVote] = await sql<
       VotesTable
-    >`SELECT * FROM votes WHERE question_id = ${payload.question_id} AND voter_id = ${payload.voter_id} RETURNING *`;
+    >`SELECT * FROM votes WHERE question_id = ${payload.question_id} AND voter_id = ${payload.voter_id}`;
     if (checkVote) {
       throw new APIError({
         status: httpStatus.BAD_REQUEST,
@@ -40,6 +40,34 @@ async function vote(payload: VoteCreateType) {
   }
 }
 
+/**
+ * A controller Fn to get all the vores for a question
+ * @param questionId The ID of the question whose votes you need to get
+ * @returns The options and their respective votes
+ */
+async function getVotes(questionId: string) {
+  try {
+    const [
+      voteCount,
+    ] = await sql`SELECT option_id, COUNT(option_id) as votes FROM votes WHERE question_id = ${questionId} GROUP BY option_id`;
+    if (!voteCount) {
+      throw new APIError({
+        status: httpStatus.NOT_FOUND,
+        errors: 'Votes not found',
+        message: 'Votes not found',
+      });
+    }
+    return voteCount;
+  } catch (error) {
+    throw new APIError({
+      errors: error,
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: error.message || error,
+    });
+  }
+}
+
 export default {
   vote,
+  getVotes,
 };
