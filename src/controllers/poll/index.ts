@@ -55,6 +55,31 @@ async function publishPoll(pollId: string) {
   }
 }
 
+
+async function getPoll(pollId: string) {
+  try {
+    const [poll] = await sql<
+      PollTable
+    >`SELECT * FROM polls WHERE id = ${pollId}`;
+
+    if (!poll) {
+      throw new APIError({
+        status: httpStatus.NOT_FOUND,
+        message: 'No poll found',
+        errors: 'Poll not found',
+      });
+    }
+
+    return poll;
+  } catch (error) {
+    throw new APIError({
+      errors: error,
+      message: error.message || error,
+      status: 500,
+    });
+  }
+}
+
 export default {
   addPoll,
   publishPoll,
