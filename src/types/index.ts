@@ -9,7 +9,9 @@ import {
 import PollController from '../controllers/poll';
 import QuestionController from '../controllers/questions';
 import UserController from '../controllers/User';
+import AuthController from '../controllers/auth';
 import VotesTable from '../interface/votes';
+import { getAuthUser } from '../middleware/auth';
 
 const UserType = new GraphQLObjectType({
   name: 'User',
@@ -122,6 +124,21 @@ export const RootQueryType = new GraphQLObjectType({
         return await UserController.getUserById(args.id);
       },
     },
+    loginUser: {
+      type: GraphQLString,
+      description: 'Login a user',
+      args: {
+        username: { type: GraphQLString, description: 'Username to login' },
+        email: { type: GraphQLString, description: "User's email" },
+        password: {
+          type: GraphQLNonNull(GraphQLString),
+          description: "user's password",
+        },
+      },
+      resolve: async (_, args) => {
+        return await AuthController.loginUser(args as UserLoginType);
+      },
+    },
     poll: {
       type: PollType,
       description: 'Poll of questions',
@@ -146,6 +163,61 @@ export const RootQueryType = new GraphQLObjectType({
       },
       resolve: async (_, args) => {
         return await QuestionController.getQuestionById(args.id);
+      },
+    },
+  }),
+});
+
+export const RootMutationType = new GraphQLObjectType({
+  name: 'Mutation',
+  description: 'Root Mutation',
+  fields: () => ({
+    registerUser: {
+      type: GraphQLString,
+      description: 'Add a new user',
+      args: {
+        first_name: {
+          type: GraphQLNonNull(GraphQLString),
+          description: "User's first name",
+        },
+        last_name: {
+          type: GraphQLNonNull(GraphQLString),
+          description: "User's last name",
+        },
+        username: {
+          type: GraphQLNonNull(GraphQLString),
+          description: "User's username",
+        },
+        email: {
+          type: GraphQLNonNull(GraphQLString),
+          description: "User's email",
+        },
+        password: {
+          type: GraphQLNonNull(GraphQLString),
+          description: "User's password",
+        },
+      },
+      resolve: async (_, args) => {
+        return await AuthController.registerUser(args as UserType);
+      },
+    },
+    addPoll: {
+      type: PollType,
+      description: 'Add a new Poll with questions',
+      args: {
+        title: {
+          type: GraphQLNonNull(GraphQLString),
+          description: 'Poll Title',
+        },
+        description: { type: GraphQLString, description: 'Poll description' },
+      },
+      resolve: (_, { title, description }, { req }) => {
+        const user = getAuthUser(req);
+        return PollController.addPoll({
+          title,
+          description,
+          author_id: user.id,
+        });
       },
     },
   }),

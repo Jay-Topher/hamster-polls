@@ -53,9 +53,12 @@ app.use('/api/auth', authRouter);
 
 app.use(
   '/graphql',
-  graphqlHTTP({
-    schema,
-    graphiql: true,
+  graphqlHTTP((req) => {
+    return {
+      schema,
+      graphiql: true,
+      context: { req },
+    };
   }),
 );
 

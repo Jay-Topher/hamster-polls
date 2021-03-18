@@ -13,7 +13,7 @@ async function registerUser(user: UserType) {
     const { email, username, password } = user;
     const [existingUser] = await sql<
       UserTable
-    >`SELECT * FROM users WHERE email = ${email} OR username = ${username}`;
+    >`SELECT * FROM users WHERE email = ${email} OR username = ${username.toLowerCase()}`;
 
     if (existingUser) {
       throw new APIError({
@@ -24,7 +24,13 @@ async function registerUser(user: UserType) {
     }
 
     const hashedPassword = await argon2.hash(password);
-    const userToSave = { ...user, password: hashedPassword };
+    const preparedUser = {
+      ...user,
+      first_name: user.first_name.toLowerCase(),
+      last_name: user.last_name.toLowerCase(),
+      username: user.username.toLowerCase(),
+    };
+    const userToSave = { ...preparedUser, password: hashedPassword };
 
     const [savedUser] = await sql<UserTable>`INSERT INTO users ${sql(
       userToSave,
