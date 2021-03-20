@@ -7,10 +7,10 @@ import status from 'http-status';
  * a Fn to add single or multiple options to a question
  * @param options option or options to add
  */
-async function addOptions(options: OptionTable[] | OptionTable) {
+async function addOptions(options: OptionCreateType[] | OptionCreateType) {
   try {
     const [savedOption] = await sql<
-      OptionTable | OptionTable[]
+      OptionTable | [OptionTable[]]
     >`INSERT INTO options ${sql(options, 'option', 'question_id')} RETURNING *`;
 
     return savedOption;
