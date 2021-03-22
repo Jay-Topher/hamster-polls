@@ -4,6 +4,7 @@ import { sql } from '../../stores/database';
 import status from 'http-status';
 import OptionTable from '../../interface/option';
 import httpStatus from 'http-status';
+import OptionsController from '../options';
 
 /**
  * A Fn to add questions to DB
@@ -20,6 +21,30 @@ async function createQuestion(questionPayload: QuestionCreateType) {
     )} RETURNING *`;
 
     return questionToSave;
+  } catch (error) {
+    throw new APIError({
+      errors: error,
+      status: status.INTERNAL_SERVER_ERROR,
+      message: error.message || error,
+    });
+  }
+}
+
+/**
+ * A controller Fn to create questions with an array of options
+ * @param payload An object with question and options
+ * payload example: {question: {question: "Are you a cat person or a dog person", poll_id: "any-generic-id"}, options: ['yes', 'no']}
+ * @returns both question and options
+ */
+async function createQuestionWithOptions(payload: QuestionOptionCreateType) {
+  try {
+    const question = await createQuestion(payload.question);
+    const optionsToSave = payload.options.map((option) => ({
+      option,
+      question_id: question.id,
+    }));
+    const savedOptions = await OptionsController.addOptions(optionsToSave);
+    return { question, options: savedOptions };
   } catch (error) {
     throw new APIError({
       errors: error,
@@ -85,6 +110,11 @@ async function deleteQuestion(questionId: string) {
   }
 }
 
+/**
+ * A controller Fn to get a question by question ID
+ * @param questionId The ID of the question you want to query
+ * @returns The question from the DB
+ */
 async function getQuestionById(questionId: string) {
   try {
     const [question] = await sql<
@@ -109,6 +139,10 @@ async function getQuestionById(questionId: string) {
   }
 }
 
+/**
+ * A controller Fn to get all options belonging to a question
+ * @param questionId The question ID
+ */
 async function getQuestionOptions(questionId: string) {
   try {
     const [options] = await sql<
@@ -137,4 +171,5 @@ export default {
   editQuestion,
   getQuestionOptions,
   getQuestionById,
+  createQuestionWithOptions,
 };
