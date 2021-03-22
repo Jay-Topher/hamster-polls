@@ -211,13 +211,61 @@ export const RootMutationType = new GraphQLObjectType({
         },
         description: { type: GraphQLString, description: 'Poll description' },
       },
-      resolve: (_, { title, description }, { req }) => {
+      resolve: async (_, { title, description }, { req }) => {
         const user = getAuthUser(req);
-        return PollController.addPoll({
+        return await PollController.addPoll({
           title,
           description,
           author_id: user.id,
         });
+      },
+    },
+    addQuestion: {
+      type: QuestionType,
+      description: 'Add a new question to a poll',
+      args: {
+        question: {
+          type: GraphQLNonNull(GraphQLString),
+          description: 'The question text',
+        },
+        poll_id: {
+          type: GraphQLNonNull(GraphQLID),
+          description: 'The ID of the parent Poll',
+        },
+      },
+      resolve: async (_, args) => {
+        return await QuestionController.createQuestion(
+          args as QuestionCreateType,
+        );
+      },
+    },
+    addQuestionWithOptions: {
+      type: QuestionType,
+      description: 'Add a question with its options array',
+      args: {
+        question: {
+          type: GraphQLNonNull(GraphQLString),
+          description: 'Question Text',
+        },
+        options: {
+          type: GraphQLNonNull(GraphQLList(GraphQLString)),
+          description: 'An array of option texts',
+        },
+        poll_id: {
+          type: GraphQLNonNull(GraphQLID),
+          description: 'The ID of the parent poll',
+        },
+      },
+      resolve: async (_, args) => {
+        const payload = {
+          question: { question: args.question, poll_id: args.poll_id },
+          options: args.options,
+        } as QuestionOptionCreateType;
+        const {
+          question,
+          options,
+        } = await QuestionController.createQuestionWithOptions(payload);
+        return { ...question, options };
       },
     },
   }),
