@@ -35,6 +35,16 @@ interface QuestionCreateType {
   poll_id: string;
 }
 
+interface OptionCreateType {
+  option: string;
+  question_id: string;
+}
+
+interface QuestionOptionCreateType {
+  question: QuestionCreateType;
+  options: string[];
+}
+
 interface VoteCreateType {
   question_id: string;
   option_id: string;
